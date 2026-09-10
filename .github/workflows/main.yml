@@ -35,6 +35,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -60,6 +67,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -85,6 +99,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -110,6 +131,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -135,6 +163,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -160,6 +195,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -185,6 +227,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -210,6 +259,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -235,6 +291,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -260,6 +323,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -285,6 +355,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -310,6 +387,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -335,6 +419,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -360,6 +451,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -385,6 +483,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -410,6 +515,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -490,6 +602,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -516,6 +635,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -542,6 +668,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -568,6 +701,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -594,6 +734,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -620,6 +767,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -646,6 +800,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -672,6 +833,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -698,6 +866,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -724,6 +899,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -750,6 +932,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -776,6 +965,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -802,6 +998,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -828,6 +1031,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -854,6 +1064,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
@@ -880,6 +1097,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Windows SDK 10.0.28000.0
+        shell: pwsh
+        run: |
+          if (Test-Path "${env:ProgramFiles(x86)}\Windows Kits\10\Include\10.0.28000.0\um\Windows.h") { exit 0 }
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/?linkid=2370315' -OutFile "$env:RUNNER_TEMP\winsdksetup.exe"
+          $installer = Start-Process "$env:RUNNER_TEMP\winsdksetup.exe" -ArgumentList '/quiet', '/norestart', '/features', '+' -Wait -PassThru
+          if ($installer.ExitCode -notin @(0, 3010)) { throw "Windows SDK installation failed: $($installer.ExitCode)" }
       - name: Init
         run: Copy-Item -Path . -Destination "C:\helium-windows" -Recurse
       - name: Setup Stage
