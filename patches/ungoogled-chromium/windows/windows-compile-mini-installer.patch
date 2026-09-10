@@ -13,7 +13,7 @@
    ]
 --- a/chrome/tools/build/win/create_installer_archive.py
 +++ b/chrome/tools/build/win/create_installer_archive.py
-@@ -259,20 +259,15 @@
+@@ -259,20 +259,15 @@ def GenerateDiffPatch(options, orig_file
  
  
  def GetLZMAExec(build_dir):

@@ -4,7 +4,7 @@
 
 --- a/build/toolchain/win/midl.py
 +++ b/build/toolchain/win/midl.py
-@@ -500,52 +500,14 @@
+@@ -500,52 +500,14 @@ def main(
      if returncode != 0:
          return returncode
  
@@ -62,7 +62,7 @@
  
 --- a/build/win/message_compiler.py
 +++ b/build/win/message_compiler.py
-@@ -138,32 +138,6 @@
+@@ -138,32 +138,6 @@ def main():
              with open(header_file, 'wb') as f:
                  f.write(b''.join(header_contents))
  

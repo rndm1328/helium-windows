@@ -20,7 +20,7 @@
              VALUE "OriginalFilename", "@ORIGINAL_FILENAME@"
 --- a/chrome/app/main_dll_loader_win.cc
 +++ b/chrome/app/main_dll_loader_win.cc
-@@ -150,7 +150,7 @@ base::FilePath GetModulePath(std::wstrin
+@@ -183,7 +183,7 @@ base::FilePath GetModulePath(std::wstrin
    // executable's directory and return the path if it can be read. This is the
    // expected location of modules for proper installs.
    const base::FilePath module_path =
@@ -68,7 +68,7 @@
  </assembly>
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -1338,7 +1338,7 @@ base::FilePath GetModulePath(std::wstrin
+@@ -1362,7 +1362,7 @@ base::FilePath GetModulePath(std::wstrin
    // executable's directory and return the path if it can be read. This is the
    // expected location of modules for proper installs.
    const base::FilePath module_path =
@@ -100,7 +100,7 @@
  // for system strings only. UI changes should be made in the GRD.
 --- a/chrome/common/chrome_constants.h
 +++ b/chrome/common/chrome_constants.h
-@@ -15,6 +15,7 @@
+@@ -13,6 +13,7 @@
  namespace chrome {
  
  extern const char kChromeVersion[];
@@ -142,7 +142,7 @@
              VALUE "ProductName", "@PRODUCT_INSTALLER_FULLNAME@"
 --- a/chrome/installer/setup/BUILD.gn
 +++ b/chrome/installer/setup/BUILD.gn
-@@ -114,6 +114,7 @@ if (is_win) {
+@@ -116,6 +116,7 @@ if (is_win) {
        "//components/crash/core/common",
        "//components/metrics:client_info",
        "//components/metrics:metrics_pref_names",
@@ -160,7 +160,7 @@
  #include "base/win/registry.h"
  #include "base/win/security_util.h"
  #include "base/win/sid.h"
-@@ -636,10 +637,11 @@ void AddUninstallShortcutWorkItems(const
+@@ -641,10 +642,11 @@ void AddUninstallShortcutWorkItems(const
                                           InstallUtil::GetPublisherName(), true);
      install_list->AddSetRegValueWorkItem(
          reg_root, uninstall_reg, KEY_WOW64_32KEY, L"Version",
@@ -187,7 +187,7 @@
    // Add work items to delete Chrome's "opv", "cpv", and "cmd" values.
 --- a/chrome/tools/build/win/create_installer_archive.py
 +++ b/chrome/tools/build/win/create_installer_archive.py
-@@ -47,25 +47,22 @@
+@@ -47,25 +47,22 @@ def BuildVersion():
      """Returns the full build version string constructed from information in
      VERSION_FILE.  Any segment not found in that file will default to '0'.
      """
