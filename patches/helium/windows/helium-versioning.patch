@@ -187,7 +187,7 @@
    // Add work items to delete Chrome's "opv", "cpv", and "cmd" values.
 --- a/chrome/tools/build/win/create_installer_archive.py
 +++ b/chrome/tools/build/win/create_installer_archive.py
-@@ -47,24 +47,18 @@ def BuildVersion():
+@@ -47,25 +47,22 @@
      """Returns the full build version string constructed from information in
      VERSION_FILE.  Any segment not found in that file will default to '0'.
      """
@@ -197,8 +197,9 @@
 -    patch = 0
 +    values = {}
      # The version file is located at the directory ${CHROMIUM_SRC}/chrome.
-     version_file_path = os.path.join(os.path.dirname(__file__), '../../..',
-                                      VERSION_FILE)
+     version_file_path = os.path.join(
+         os.path.dirname(__file__), '../../..', VERSION_FILE
+     )
      for line in open(version_file_path, 'r'):
 -        line = line.rstrip()
 -        if line.startswith('MAJOR='):
@@ -213,13 +214,16 @@
 +        key, sep, value = line.rstrip().partition('=')
 +        if sep:
 +            values[key] = value
-+    return '%s.%s.%s.%s' % (values.get('HELIUM_MAJOR', '0'),
-+                            values.get('HELIUM_MINOR', '0'),
-+                            values.get('HELIUM_PATCH', '0'),
-+                            values.get('HELIUM_PLATFORM', '0'))
++    return '%s.%s.%s.%s' % (
++        values.get('HELIUM_MAJOR', '0'),
++        values.get('HELIUM_MINOR', '0'),
++        values.get('HELIUM_PATCH', '0'),
++        values.get('HELIUM_PLATFORM', '0'),
++    )
++
  
  
- def CompressUsingLZMA(build_dir,
+ def CompressUsingLZMA(
 --- a/chrome/version.gni
 +++ b/chrome/version.gni
 @@ -19,7 +19,9 @@

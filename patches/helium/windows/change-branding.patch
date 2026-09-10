@@ -133,7 +133,7 @@
    // Fallback to current directory if getting the secure or temp directory
 --- a/chrome/tools/build/win/create_installer_archive.py
 +++ b/chrome/tools/build/win/create_installer_archive.py
-@@ -25,7 +25,7 @@ ARCHIVE_DIR = "installer_archive"
+@@ -25,7 +25,7 @@
  # suffix to uncompressed full archive file, appended to options.output_name
  ARCHIVE_SUFFIX = ".7z"
  BSDIFF_EXEC = "bsdiff.exe"
@@ -142,15 +142,15 @@
  CHROME_PATCH_FILE_SUFFIX = "_patch"  # prefixed by options.output_name
  
  # compressed full archive suffix, will be prefixed by options.output_name
-@@ -732,7 +732,7 @@ def _ParseOptions():
-         '{BSDIFF|ZUCCHINI}.')
-     parser.add_option('-n',
-                       '--output_name',
--                      default='chrome',
-+                      default='helium',
-                       help='Name used to prefix names of generated archives.')
-     parser.add_option('--enable_hidpi',
-                       default='0',
+@@ -888,7 +888,7 @@
+     parser.add_option(
+         '-n',
+         '--output_name',
+-        default='chrome',
++        default='helium',
+         help='Name used to prefix names of generated archives.',
+     )
+     parser.add_option(
 --- a/components/policy/tools/template_writers/writer_configuration.py
 +++ b/components/policy/tools/template_writers/writer_configuration.py
 @@ -27,21 +27,21 @@ def GetConfigurationForBuild(defines):
