@@ -1,6 +1,6 @@
 --- a/chrome/browser/chrome_browser_main_win.cc
 +++ b/chrome/browser/chrome_browser_main_win.cc
-@@ -138,6 +138,10 @@
+@@ -137,6 +137,10 @@
  #include "chrome/browser/platform_experience/installer/installer_win.h"
  #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
  
@@ -11,7 +11,7 @@
  namespace {
  
  typedef HRESULT (STDAPICALLTYPE* RegisterApplicationRestartProc)(
-@@ -643,6 +647,10 @@ void ChromeBrowserMainPartsWin::PostProf
+@@ -641,6 +645,10 @@ void ChromeBrowserMainPartsWin::PostProf
    if (!is_initial_profile)
      return;
  
@@ -30,9 +30,9 @@
  #include "chrome/browser/browser_process_platform_part.h"
 +#include "chrome/browser/buildflags.h"
  #include "chrome/browser/download/download_core_service.h"
+ #include "chrome/browser/global_features.h"
  #include "chrome/browser/lifetime/application_lifetime.h"
- #include "chrome/browser/lifetime/browser_close_manager.h"
-@@ -63,6 +64,10 @@
+@@ -65,6 +66,10 @@
  #include "base/win/win_util.h"
  #endif  // BUILDFLAG(IS_WIN)
  

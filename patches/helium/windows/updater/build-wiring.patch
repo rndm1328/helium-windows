@@ -22,7 +22,7 @@
    }
  
    # Android and ChromeOS don't support multiple browser processes, so they don't
-@@ -1422,6 +1430,17 @@ source_set("core") {
+@@ -1425,6 +1433,17 @@ source_set("core") {
    }
  
    if (is_win) {
@@ -83,7 +83,7 @@
    }
 --- a/chrome/installer/mini_installer/chrome.release
 +++ b/chrome/installer/mini_installer/chrome.release
-@@ -38,6 +38,7 @@ vk_swiftshader.dll: %(VersionDir)s\
+@@ -39,6 +39,7 @@ vk_swiftshader.dll: %(VersionDir)s\
  vk_swiftshader_icd.json: %(VersionDir)s\
  vulkan-1.dll: %(VersionDir)s\
  v8_context_snapshot.bin: %(VersionDir)s\
@@ -93,7 +93,7 @@
  #
 --- a/chrome/tools/build/win/FILES.cfg
 +++ b/chrome/tools/build/win/FILES.cfg
-@@ -79,6 +79,12 @@ FILES = [
+@@ -85,6 +85,12 @@ FILES = [
      'filegroup': ['default'],
    },
    {
@@ -133,7 +133,7 @@
 +                "WinSparkle.dll"
              ],
              "file_globs": [
-                 "locales\\*.pak",
+                 "chrome_renderer.dll",
 --- a/third_party/expat/BUILD.gn
 +++ b/third_party/expat/BUILD.gn
 @@ -12,6 +12,7 @@ expat_visibility = [

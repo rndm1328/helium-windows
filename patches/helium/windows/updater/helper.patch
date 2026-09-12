@@ -1,6 +1,6 @@
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -1439,6 +1439,7 @@ source_set("core") {
+@@ -1442,6 +1442,7 @@ source_set("core") {
          "//components/helium_services",
          "//third_party/winsparkle",
        ]
@@ -650,7 +650,7 @@
 +}  // namespace helium_updater
 --- a/chrome/installer/mini_installer/chrome.release
 +++ b/chrome/installer/mini_installer/chrome.release
-@@ -27,6 +27,7 @@ chrome_wer.dll: %(VersionDir)s\
+@@ -28,6 +28,7 @@ chrome_wer.dll: %(VersionDir)s\
  d3dcompiler_47.dll: %(VersionDir)s\
  elevation_service.exe: %(VersionDir)s\
  eventlog_provider.dll: %(VersionDir)s\
@@ -670,7 +670,7 @@
    'IDS_INSTALL_HIGHER_VERSION',
 --- a/chrome/tools/build/win/FILES.cfg
 +++ b/chrome/tools/build/win/FILES.cfg
-@@ -85,6 +85,13 @@ FILES = [
+@@ -91,6 +91,13 @@ FILES = [
      'optional': ['dev', 'official'],
    },
    {
