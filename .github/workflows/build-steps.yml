@@ -1,13 +1,24 @@
 name: Build Windows packages
 
-workflow_call:
-  inputs:
-    arch:
-      required: true
-      type: string
-    runs-on:
-      required: true
-      type: string
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+      runs-on:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      arch:
+        required: true
+        type: string
+        default: 'x86_64'
+      runs-on:
+        required: true
+        type: string
+        default: 'windows-2025'
 
 permissions:
   contents: read
