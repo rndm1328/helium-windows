@@ -1,0 +1,113 @@
+name: Sync Upstream, Enforce EAC & Build
+
+on:
+  schedule:
+    # Runs automatically every day at 04:00 UTC
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: 'Trigger a build even if already up to date with upstream'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  sync-enforce-and-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          # Use a Personal Access Token (PAT) if available so pushed commits and
+          # dispatched workflows have full permissions; falls back to GITHUB_TOKEN.
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Sync with imputnet/helium-windows and enforce EAC flags
+        id: sync
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git remote add upstream https://github.com/imputnet/helium-windows.git
+          git fetch upstream main
+
+          BEFORE_SHA=$(git rev-parse HEAD)
+          UPSTREAM_SHA=$(git rev-parse upstream/main)
+
+          echo "Current fork HEAD: $BEFORE_SHA"
+          echo "Upstream HEAD:     $UPSTREAM_SHA"
+
+          # Merge upstream changes, favoring upstream if conflict occurs so we can
+          # cleanly re-apply our exact EAC flags right after.
+          if ! git merge-base --is-ancestor "$UPSTREAM_SHA" HEAD; then
+            echo "New upstream commits found. Merging upstream/main..."
+            git merge upstream/main -X theirs --no-edit || true
+          else
+            echo "Fork already includes latest upstream commits."
+          fi
+
+          # Strip any existing conflicting definitions of the 3 codec flags in flags.windows.gn
+          sed -i '/^[[:space:]]*proprietary_codecs[[:space:]]*=/d' flags.windows.gn
+          sed -i '/^[[:space:]]*ffmpeg_branding[[:space:]]*=/d' flags.windows.gn
+          sed -i '/^[[:space:]]*enable_platform_ac3_eac3_audio[[:space:]]*=/d' flags.windows.gn
+
+          # Ensure file ends with a newline before appending
+          [ -n "$(tail -c1 flags.windows.gn)" ] && echo "" >> flags.windows.gn
+
+          # Append EAC / proprietary audio flags
+          cat << 'EOF' >> flags.windows.gn
+          proprietary_codecs=true
+          ffmpeg_branding="Chrome"
+          enable_platform_ac3_eac3_audio=true
+          EOF
+
+          # Verify all 3 flags are present and properly set
+          grep -qx 'proprietary_codecs=true' flags.windows.gn
+          grep -qx 'ffmpeg_branding="Chrome"' flags.windows.gn
+          grep -qx 'enable_platform_ac3_eac3_audio=true' flags.windows.gn
+          echo "Verified EAC flags in flags.windows.gn."
+
+          # Commit if flags.windows.gn was modified or re-patched
+          if ! git diff --quiet flags.windows.gn; then
+            git add flags.windows.gn
+            git commit -m "chore: enforce EAC and proprietary codecs in flags.windows.gn"
+          fi
+
+          AFTER_SHA=$(git rev-parse HEAD)
+
+          if [ "$BEFORE_SHA" != "$AFTER_SHA" ]; then
+            git push origin main
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No changes to push."
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Trigger Windows Build Workflow
+        if: steps.sync.outputs.updated == 'true' || inputs.force_build == true
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          # Automatically detect the build workflow filename in .github/workflows/
+          WORKFLOW_FILE=""
+          for candidate in "build.yml" "build.yaml" "release.yml" "ci.yml"; do
+            if [ -f ".github/workflows/$candidate" ]; then
+              WORKFLOW_FILE="$candidate"
+              break
+            fi
+          done
+
+          # Fallback: search for the workflow named "Build and release binaries"
+          if [ -z "$WORKFLOW_FILE" ]; then
+            WORKFLOW_FILE=$(grep -rl "Build and release binaries" .github/workflows/ | head -n 1 | xargs basename)
+          fi
+
+          echo "Triggering workflow: $WORKFLOW_FILE on branch main"
+          gh workflow run "$WORKFLOW_FILE" --repo "${{ github.repository }}" --ref main
