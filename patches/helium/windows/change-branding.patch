@@ -18,7 +18,7 @@
  
  // Note: This list of indices must be kept in sync with the brand-specific
  // resource strings in chrome/installer/util/prebuild/create_string_rc.
-@@ -44,35 +44,35 @@ inline constexpr auto kInstallModes = st
+@@ -53,35 +53,35 @@ inline constexpr auto kInstallModes = st
              L"",  // Empty install_suffix for the primary install mode.
          .logo_suffix = L"",  // No logo suffix for the primary install mode.
          .app_guid =
@@ -64,9 +64,9 @@
                            0x3a}},  // IElevator IID and TypeLib
 -        // {BB19A0E5-00C6-4966-94B2-5AFEC6FED93A}.
 +        // {C89A04FF-00C6-4966-94B2-5AFEC6FED93A}.
+         .old_elevator_iids = {},
          .tracing_service_clsid = {0x83f69367,
                                    0x442d,
-                                   0x447f,
 --- a/chrome/installer/mini_installer/mini_installer_constants.cc
 +++ b/chrome/installer/mini_installer/mini_installer_constants.cc
 @@ -12,7 +12,7 @@ namespace mini_installer {
@@ -131,6 +131,19 @@
  #endif
  
    // Fallback to current directory if getting the secure or temp directory
+--- a/chrome/installer/mini_installer/BUILD.gn
++++ b/chrome/installer/mini_installer/BUILD.gn
+@@ -159,8 +159,8 @@ action("mini_installer_archive") {
+   ]
+ 
+   outputs = [
+-    "$root_out_dir/chrome.7z",
+-    "$root_out_dir/chrome.packed.7z",
++    "$root_out_dir/helium.7z",
++    "$root_out_dir/helium.packed.7z",
+     "$root_out_dir/setup.ex_",
+     packed_files_rc_file,
+   ]
 --- a/chrome/tools/build/win/create_installer_archive.py
 +++ b/chrome/tools/build/win/create_installer_archive.py
 @@ -25,7 +25,7 @@ ARCHIVE_DIR = "installer_archive"

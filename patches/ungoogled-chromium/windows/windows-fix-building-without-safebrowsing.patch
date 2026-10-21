@@ -17,15 +17,15 @@
        "//build:branding_buildflags",
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -5283,7 +5283,6 @@ std::wstring ChromeContentBrowserClient:
+@@ -5360,7 +5360,6 @@ std::wstring ChromeContentBrowserClient:
  #endif
      case sandbox::mojom::Sandbox::kPrintCompositor:
      case sandbox::mojom::Sandbox::kAudio:
 -    case sandbox::mojom::Sandbox::kScreenAI:
+     case sandbox::mojom::Sandbox::kPlatformRuntime:
      case sandbox::mojom::Sandbox::kSpeechRecognition:
      case sandbox::mojom::Sandbox::kPdfConversion:
-     case sandbox::mojom::Sandbox::kService:
-@@ -5391,7 +5390,6 @@ bool ChromeContentBrowserClient::PreSpaw
+@@ -5469,7 +5468,6 @@ bool ChromeContentBrowserClient::PreSpaw
      case sandbox::mojom::Sandbox::kPrintBackend:
  #endif
      case sandbox::mojom::Sandbox::kPrintCompositor:
@@ -64,16 +64,6 @@
    std::wstring cred_provider_gaia_id;
    std::wstring cred_provider_email;
  
---- a/chrome/browser/ui/views/page_info/BUILD.gn
-+++ b/chrome/browser/ui/views/page_info/BUILD.gn
-@@ -77,7 +77,6 @@
-     "safety_tip_page_info_bubble_view.cc",
-     "security_information_view.cc",
-     "star_rating_view.cc",
--    "suspicious_site_bubble_view.cc",
-     "web_view_side_panel_view.cc",
-   ]
- 
 --- a/components/safe_browsing/buildflags.gni
 +++ b/components/safe_browsing/buildflags.gni
 @@ -26,6 +26,7 @@ declare_args() {
@@ -84,3 +74,14 @@
  
    # Allows building without //third_party/unrar included, for license reasons
    safe_browsing_use_unrar = true
+--- a/components/safe_browsing/core/browser/ping_manager.cc
++++ b/components/safe_browsing/core/browser/ping_manager.cc
+@@ -608,8 +608,6 @@ PingManager::ReportThreatDetailsResult P
+   SanitizeThreatDetailsReport(report);
+   if (!get_user_population_callback_.is_null()) {
+     *report->mutable_population() = get_user_population_callback_.Run();
+-    // TODO(crbug.com/372395685): Remove this post feature launch.
+-    GetExperimentStatus({&kLocalListsUseSBv5}, report->mutable_population());
+   }
+   if (!get_page_load_token_callback_.is_null()) {
+     ChromeUserPopulation::PageLoadToken token =
