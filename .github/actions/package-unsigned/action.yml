@@ -1,0 +1,67 @@
+name: Package Windows release (unsigned)
+description: Finish the build, create unsigned release packages, and upload them
+inputs:
+  from_artifact:
+    description: Restore the build tree from a previous job
+    default: true
+  arch:
+    description: Target architecture (x86_64 or arm64)
+    required: true
+outputs:
+  version:
+    description: Version of the packaged release
+    value: ${{ steps.stage3.outputs.version }}
+  artifacts:
+    description: Directory that holds the generated release packages
+    value: ${{ steps.package.outputs.artifacts }}
+runs:
+  using: composite
+  steps:
+    - name: Run Stage
+      id: stage
+      uses: ./.github/actions/stage
+      with:
+        arm: ${{ inputs.arch == 'arm64' }}
+        from_artifact: ${{ inputs.from_artifact }}
+        save_artifact: false
+
+    - name: Check build completed
+      if: steps.stage.outputs.finished != 'true'
+      shell: pwsh
+      run: throw 'Build did not finish within the available stages'
+
+    # package.py is the unsigned packaging entry point: it builds the NSIS
+    # installer, the mini installer and the portable ZIP straight from the
+    # build outputs, without touching Azure Trusted Signing.
+    - name: Package unsigned release
+      id: package
+      shell: pwsh
+      working-directory: C:\helium-windows
+      run: |
+        python package.py `
+          --build-outputs "C:\helium-windows\build\src\out\Default" `
+          --output-dir "C:\helium-windows\build\artifacts" `
+          --cpu-arch 64bit
+        if ($LASTEXITCODE) { exit $LASTEXITCODE }
+        "artifacts=C:\helium-windows\build\artifacts" >> $env:GITHUB_OUTPUT
+
+    - name: Upload symbols
+      uses: actions/upload-artifact@v4
+      with:
+        name: helium-windows-${{ inputs.arch }}-symbols
+        path: |
+          C:\helium-windows\build\src\out\Default\*.pdb
+          C:\helium-windows\build\src\out\Default\*.exe
+          C:\helium-windows\build\src\out\Default\*.dll
+        if-no-files-found: error
+        retention-days: 4
+        overwrite: true
+
+    - name: Upload artifacts
+      id: stage3
+      uses: ./.github/actions/stage
+      with:
+        upload_final: true
+        final_directory: ${{ steps.package.outputs.artifacts }}
+        arm: ${{ inputs.arch == 'arm64' }}
+        from_artifact: false

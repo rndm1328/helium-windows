@@ -39,12 +39,18 @@ jobs:
           if ! git merge-base --is-ancestor "$UPSTREAM_SHA" HEAD; then
             echo "New upstream commits found. Merging upstream/main..."
             git merge upstream/main -X theirs --no-edit || true
+            if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+              echo "Merge left unresolved conflicts; aborting to keep the fork intact."
+              git merge --abort || true
+            fi
           else
             echo "Fork already includes latest upstream commits."
           fi
 
-          # Ensure your local workflows (without Azure) are preserved over upstream
-          git checkout HEAD -- .github/workflows/ || true
+          # Ensure your local workflows (without Azure) are preserved over upstream.
+          # BEFORE_SHA is used on purpose: after a successful merge HEAD points at
+          # the merge commit, which already carries upstream's workflow changes.
+          git checkout "$BEFORE_SHA" -- .github/workflows/ || true
 
           # Strip any existing definitions of the 3 codec flags in flags.windows.gn
           sed -i '/^[[:space:]]*proprietary_codecs[[:space:]]*=/d' flags.windows.gn
@@ -82,8 +88,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          # Locate the main workflow that contains "Build and release binaries" (excluding build-stage.yml)
-          WORKFLOW_PATH=$(grep -rl "Build and release binaries" .github/workflows/ | grep -v "sync-and-build" | head -n 1)
+          # Locate the unsigned build workflow; fall back to the main workflow.
+          WORKFLOW_PATH=".github/workflows/build-nosign.yml"
+          if [ ! -f "$WORKFLOW_PATH" ]; then
+            WORKFLOW_PATH=$(grep -rl "Build and release binaries" .github/workflows/ | grep -v "sync-and-build" | head -n 1)
+          fi
           if [ -z "$WORKFLOW_PATH" ]; then
             for candidate in "release.yml" "build.yml" "ci.yml"; do
               if [ -f ".github/workflows/$candidate" ]; then

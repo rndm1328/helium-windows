@@ -12,6 +12,11 @@ on:
         type: boolean
         description: 'Create a release after build is done'
         default: false
+      sign:
+        required: false
+        type: boolean
+        description: 'Sign the release with Azure Trusted Signing'
+        default: false
 
 permissions:
   contents: read
@@ -24,9 +29,11 @@ jobs:
         arch: [x86_64, arm64]
       fail-fast: false
     uses: ./.github/workflows/build-steps.yml
+    secrets: inherit
     with:
       arch: ${{ matrix.arch }}
       runs-on: ${{ inputs.runner }}
+      sign: ${{ inputs.sign }}
 
   publish-release:
     needs: build

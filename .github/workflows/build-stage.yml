@@ -1,21 +1,40 @@
 name: Build Windows stage
 
-workflow_call:
-  inputs:
-    arch:
-      required: true
-      type: string
-    runs-on:
-      required: true
-      type: string
-    from-artifact:
-      required: true
-      type: boolean
-  outputs:
-    finished:
-      value: ${{ jobs.build.outputs.finished }}
-    version:
-      value: ${{ jobs.build.outputs.version }}
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+      runs-on:
+        required: true
+        type: string
+      from-artifact:
+        required: true
+        type: boolean
+      sign:
+        description: Sign the release with Azure Trusted Signing
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      AZURE_TENANT_ID:
+        required: false
+      AZURE_CLIENT_ID:
+        required: false
+      AZURE_CLIENT_SECRET:
+        required: false
+      AZURE_SIGNING_ENDPOINT:
+        required: false
+      AZURE_SIGNING_ACCOUNT:
+        required: false
+      AZURE_SIGNING_CERTIFICATE_NAME:
+        required: false
+    outputs:
+      finished:
+        value: ${{ jobs.build.outputs.finished }}
+      version:
+        value: ${{ jobs.build.outputs.version }}
 
 permissions:
   contents: read
@@ -30,7 +49,7 @@ jobs:
     runs-on: ${{ inputs.runs-on }}
     outputs:
       finished: ${{ steps.stage.outputs.finished }}
-      version: ${{ steps.package.outputs.version }}
+      version: ${{ steps.package_signed.outputs.version || steps.package_unsigned.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,8 +62,20 @@ jobs:
           from_artifact: ${{ inputs.from-artifact }}
           package_here: true
       - uses: ./.github/actions/package
-        id: package
-        if: steps.stage.outputs.package_here == 'true'
+        id: package_signed
+        if: steps.stage.outputs.package_here == 'true' && inputs.sign
+        with:
+          from_artifact: false
+          arch: ${{ inputs.arch }}
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          azure-signing-endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          azure-signing-account: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+          azure-signing-certificate-name: ${{ secrets.AZURE_SIGNING_CERTIFICATE_NAME }}
+      - uses: ./.github/actions/package-unsigned
+        id: package_unsigned
+        if: steps.stage.outputs.package_here == 'true' && !inputs.sign
         with:
           from_artifact: false
           arch: ${{ inputs.arch }}
