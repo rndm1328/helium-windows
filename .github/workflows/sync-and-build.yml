@@ -1,15 +1,15 @@
 name: Sync Upstream, Enforce EAC & Build
 
-schedule:
-  - cron: '0 4 * * *'
-
-workflow_dispatch:
-  inputs:
-    force_build:
-      description: 'Trigger a build even if already up to date with upstream'
-      required: false
-      default: true
-      type: boolean
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: 'Trigger a build even if already up to date with upstream'
+        required: false
+        default: true
+        type: boolean
 
 permissions:
   contents: write
