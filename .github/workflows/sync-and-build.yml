@@ -2,14 +2,13 @@ name: Sync Upstream, Enforce EAC & Build
 
 on:
   schedule:
-    # Runs automatically every day at 04:00 UTC
     - cron: '0 4 * * *'
   workflow_dispatch:
     inputs:
       force_build:
         description: 'Trigger a build even if already up to date with upstream'
         required: false
-        default: false
+        default: true
         type: boolean
 
 permissions:
@@ -25,8 +24,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-          # Use a Personal Access Token (PAT) if available so pushed commits and
-          # dispatched workflows have full permissions; falls back to GITHUB_TOKEN.
+          submodules: false
           token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Sync with imputnet/helium-windows and enforce EAC flags
@@ -41,11 +39,6 @@ jobs:
           BEFORE_SHA=$(git rev-parse HEAD)
           UPSTREAM_SHA=$(git rev-parse upstream/main)
 
-          echo "Current fork HEAD: $BEFORE_SHA"
-          echo "Upstream HEAD:     $UPSTREAM_SHA"
-
-          # Merge upstream changes, favoring upstream if conflict occurs so we can
-          # cleanly re-apply our exact EAC flags right after.
           if ! git merge-base --is-ancestor "$UPSTREAM_SHA" HEAD; then
             echo "New upstream commits found. Merging upstream/main..."
             git merge upstream/main -X theirs --no-edit || true
@@ -53,28 +46,23 @@ jobs:
             echo "Fork already includes latest upstream commits."
           fi
 
-          # Strip any existing conflicting definitions of the 3 codec flags in flags.windows.gn
+          # Strip any existing definitions of the 3 codec flags in flags.windows.gn
           sed -i '/^[[:space:]]*proprietary_codecs[[:space:]]*=/d' flags.windows.gn
           sed -i '/^[[:space:]]*ffmpeg_branding[[:space:]]*=/d' flags.windows.gn
           sed -i '/^[[:space:]]*enable_platform_ac3_eac3_audio[[:space:]]*=/d' flags.windows.gn
 
-          # Ensure file ends with a newline before appending
           [ -n "$(tail -c1 flags.windows.gn)" ] && echo "" >> flags.windows.gn
 
-          # Append EAC / proprietary audio flags
           cat << 'EOF' >> flags.windows.gn
           proprietary_codecs=true
           ffmpeg_branding="Chrome"
           enable_platform_ac3_eac3_audio=true
           EOF
 
-          # Verify all 3 flags are present and properly set
           grep -qx 'proprietary_codecs=true' flags.windows.gn
           grep -qx 'ffmpeg_branding="Chrome"' flags.windows.gn
           grep -qx 'enable_platform_ac3_eac3_audio=true' flags.windows.gn
-          echo "Verified EAC flags in flags.windows.gn."
 
-          # Commit if flags.windows.gn was modified or re-patched
           if ! git diff --quiet flags.windows.gn; then
             git add flags.windows.gn
             git commit -m "chore: enforce EAC and proprietary codecs in flags.windows.gn"
@@ -90,24 +78,34 @@ jobs:
             echo "updated=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Trigger Windows Build Workflow
+      - name: Trigger Windows Build & Release Workflow
         if: steps.sync.outputs.updated == 'true' || inputs.force_build == true
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          # Automatically detect the build workflow filename in .github/workflows/
-          WORKFLOW_FILE=""
-          for candidate in "build.yml" "build.yaml" "release.yml" "ci.yml"; do
-            if [ -f ".github/workflows/$candidate" ]; then
-              WORKFLOW_FILE="$candidate"
-              break
+          # Locate the main workflow that contains "Build and release binaries" (excluding build-stage.yml)
+          WORKFLOW_PATH=$(grep -rl "Build and release binaries" .github/workflows/ | grep -v "sync-and-build" | head -n 1)
+          if [ -z "$WORKFLOW_PATH" ]; then
+            for candidate in "release.yml" "build.yml" "ci.yml"; do
+              if [ -f ".github/workflows/$candidate" ]; then
+                WORKFLOW_PATH=".github/workflows/$candidate"
+                break
+              fi
+            done
+          fi
+
+          WORKFLOW_FILE=$(basename "$WORKFLOW_PATH")
+          echo "Found target workflow: $WORKFLOW_FILE"
+
+          # Check if the workflow requires a boolean input to publish a release
+          EXTRA_ARGS=()
+          for input_name in "release" "publish" "publish_release" "create_release"; do
+            if grep -qE "^[[:space:]]+${input_name}:" "$WORKFLOW_PATH"; then
+              echo "Detected workflow input '$input_name', setting to true"
+              EXTRA_ARGS+=("-f" "${input_name}=true")
             fi
           done
 
-          # Fallback: search for the workflow named "Build and release binaries"
-          if [ -z "$WORKFLOW_FILE" ]; then
-            WORKFLOW_FILE=$(grep -rl "Build and release binaries" .github/workflows/ | head -n 1 | xargs basename)
-          fi
-
-          echo "Triggering workflow: $WORKFLOW_FILE on branch main"
-          gh workflow run "$WORKFLOW_FILE" --repo "${{ github.repository }}" --ref main
+          gh workflow run "$WORKFLOW_FILE" --repo "${{ github.repository }}" --ref main "${EXTRA_ARGS[@]}"
+          sleep 3
+          gh run list --repo "${{ github.repository }}" --workflow "$WORKFLOW_FILE" --limit 1
