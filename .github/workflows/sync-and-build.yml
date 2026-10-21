@@ -32,7 +32,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote add upstream https://github.com/imputnet/helium-windows.git
+          # `git remote add` fails when the remote already exists, which breaks
+          # re-runs on a reused workspace; fall back to updating the URL.
+          git remote add upstream https://github.com/imputnet/helium-windows.git 2>/dev/null \
+            || git remote set-url upstream https://github.com/imputnet/helium-windows.git
           git fetch upstream main
           BEFORE_SHA=$(git rev-parse HEAD)
           UPSTREAM_SHA=$(git rev-parse upstream/main)
