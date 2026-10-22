@@ -1,36 +1,156 @@
-name: 'Stage'
-description: 'Stage build'
+name: 'Build Windows Stage (Unsigned)'
+description: 'Runs a time-boxed stage of the Helium Windows build on standard GitHub runners'
 inputs:
-  from_artifact:
-    description: If a previous stage already uploaded build artifacts, the stage will resume building
+  stage:
+    description: 'Current stage number'
     required: true
-  package_here:
-    description: Package on this runner if compilation finishes with time to spare
-    default: false
-  save_artifact:
-    description: Save the build tree for another job
-    default: true
-  arm:
-    description: Build arm binary
+  final:
+    description: 'Whether this is the final packaging stage'
     required: false
-    default: false
-  upload_final:
-    description: Upload artifacts after installer creation and signing
+    default: 'false'
+  arch:
+    description: 'Target architecture (x64 or arm64)'
     required: false
-    default: false
-  final_directory:
-    description: Directory of verified release artifacts to upload
-    required: false
-outputs:
-  finished:
-    description: If a previous stage already finished the build, the stage will set all output variables to the input ones and exit
-  package_here:
-    description: Compilation finished with enough time to package on this runner
-  artifact_id:
-    description: id of the build dir artifact
-  version:
-    description: version of the helium release we just built
+    default: 'x64'
 
 runs:
-  using: 'node24'
-  main: 'index.js'
+  using: 'composite'
+  steps:
+    - name: Download previous stage check-in
+      if: inputs.stage != '1'
+      id: download
+      continue-on-error: true
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifact-${{ inputs.arch }}
+
+    - name: Proceed check
+      id: proceed
+      shell: pwsh
+      run: |
+        # Stage 1 always runs; subsequent stages only run if a previous stage uploaded an incomplete build artifact
+        if ("${{ inputs.stage }}" -eq "1" -or "${{ steps.download.outcome }}" -eq "success") {
+          echo "proceed=true" >> $env:GITHUB_OUTPUT
+        } else {
+          echo "proceed=false" >> $env:GITHUB_OUTPUT
+        }
+
+    - name: Maximize runner disk space
+      if: steps.proceed.outputs.proceed == 'true'
+      shell: pwsh
+      run: |
+        # Chromium + E-AC3 FFmpeg build requires ~65GB+. Free up unused SDKs on GitHub runners.
+        Remove-Item -Path "C:\hostedtoolcache\windows\Boost" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "C:\Program Files\dotnet\shared" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "C:\Android" -Recurse -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path "C:\ghcup" -Recurse -Force -ErrorAction SilentlyContinue
+
+    - name: Checkout repository with submodules
+      if: steps.proceed.outputs.proceed == 'true'
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup Python
+      if: steps.proceed.outputs.proceed == 'true'
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Setup Node.js
+      if: steps.proceed.outputs.proceed == 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Install Python dependencies & Lift MAX_PATH
+      if: steps.proceed.outputs.proceed == 'true'
+      shell: pwsh
+      run: |
+        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1
+        python -m pip install --upgrade pip requests Pillow
+        # Ensure python3.exe exists on PATH as required by helium-windows scripts
+        $pyDir = Split-Path (Get-Command python).Source
+        if (-not (Test-Path "$pyDir\python3.exe")) {
+          Copy-Item "$pyDir\python.exe" "$pyDir\python3.exe"
+        }
+
+    - name: Disable Code Signing in signing.py
+      if: steps.proceed.outputs.proceed == 'true'
+      shell: pwsh
+      run: |
+        # Neutralize any signing functions in signing.py so build.py and package.py run unsigned without Azure credentials
+        if (Test-Path "signing.py") {
+          python -c '
+        import ast, pathlib
+        p = pathlib.Path("signing.py")
+        tree = ast.parse(p.read_text(encoding="utf-8"))
+        lines = ["# Unsigned build override\n"]
+        for node in tree.body:
+            if isinstance(node, ast.FunctionDef):
+                lines.append(f"def {node.name}(*args, **kwargs):\n    print(f\"[UNSIGNED] Skipping {node.name}\")\n    return None\n\n")
+            elif isinstance(node, ast.Assign):
+                lines.append(ast.get_source_segment(p.read_text(encoding="utf-8"), node) + "\n")
+        p.write_text("".join(lines), encoding="utf-8")
+        '
+          Write-Host "Neutralized signing.py for unsigned build:"
+          Get-Content signing.py
+        }
+
+    - name: Restore intermediate build state
+      if: steps.proceed.outputs.proceed == 'true' && inputs.stage != '1'
+      shell: pwsh
+      run: |
+        7z x build_state.7z -aos
+        Remove-Item build_state.7z -Force
+
+    - name: Delete previous artifact to save storage quota
+      if: steps.proceed.outputs.proceed == 'true' && inputs.stage != '1'
+      uses: geekyeggo/delete-artifact@v5
+      with:
+        name: build-artifact-${{ inputs.arch }}
+        failOnError: false
+
+    - name: Run Build / Package Stage
+      if: steps.proceed.outputs.proceed == 'true'
+      id: build_step
+      shell: cmd
+      run: |
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        if "${{ inputs.arch }}" == "arm64" (
+          set ARCH_FLAG=--arm64
+        ) else (
+          set ARCH_FLAG=
+        )
+        python3 build.py --ci %ARCH_FLAG%
+        if %ERRORLEVEL% EQU 0 (
+          echo BUILD_COMPLETE=true>> %GITHUB_OUTPUT%
+          python3 package.py %ARCH_FLAG%
+        ) else (
+          echo BUILD_COMPLETE=false>> %GITHUB_OUTPUT%
+        )
+
+    - name: Save state if build is not finished yet
+      if: steps.proceed.outputs.proceed == 'true' && steps.build_step.outputs.BUILD_COMPLETE == 'false'
+      shell: pwsh
+      run: |
+        # Compress build directory for next stage
+        7z a -t7z -m0=lzma2 -mx=1 -mmt=on build_state.7z build/
+
+    - name: Upload intermediate state for next stage
+      if: steps.proceed.outputs.proceed == 'true' && steps.build_step.outputs.BUILD_COMPLETE == 'false'
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifact-${{ inputs.arch }}
+        path: build_state.7z
+        retention-days: 1
+
+    - name: Upload Final Unsigned Packages
+      if: steps.proceed.outputs.proceed == 'true' && steps.build_step.outputs.BUILD_COMPLETE == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: helium-unsigned-${{ inputs.arch }}
+        path: |
+          build/*.zip
+          build/*installer*.exe
+        retention-days: 14
