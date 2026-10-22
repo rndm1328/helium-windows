@@ -1,0 +1,113 @@
+name: Build Unsigned Binaries
+
+on:
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: 'Architecture to build (x64 or arm64)'
+        required: true
+        default: 'x64'
+        type: choice
+        options:
+          - x64
+          - arm64
+      create_release:
+        description: 'Create a GitHub Release when finished'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  build-1:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/stage
+        with:
+          stage: '1'
+          arch: ${{ inputs.arch }}
+
+  build-2:
+    needs: build-1
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/stage
+        with:
+          stage: '2'
+          arch: ${{ inputs.arch }}
+
+  build-3:
+    needs: build-2
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/stage
+        with:
+          stage: '3'
+          arch: ${{ inputs.arch }}
+
+  build-4:
+    needs: build-3
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/stage
+        with:
+          stage: '4'
+          arch: ${{ inputs.arch }}
+
+  build-5:
+    needs: build-4
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/stage
+        with:
+          stage: '5'
+          arch: ${{ inputs.arch }}
+
+  build-6:
+    needs: build-5
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/stage
+        with:
+          stage: '6'
+          arch: ${{ inputs.arch }}
+
+  release:
+    needs: [build-1, build-2, build-3, build-4, build-5, build-6]
+    if: ${{ inputs.create_release }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Download Built Packages
+        uses: actions/download-artifact@v4
+        with:
+          name: helium-unsigned-${{ inputs.arch }}
+          path: dist/
+
+      - name: Determine Version
+        id: version
+        run: |
+          CHROMIUM_VER=$(cat helium-chromium/chromium_version.txt 2>/dev/null || echo "custom")
+          HELIUM_REV=$(cat revision.txt 2>/dev/null || echo "1")
+          echo "tag=v${CHROMIUM_VER}-${HELIUM_REV}-eac3" >> $GITHUB_OUTPUT
+
+      - name: Publish Unsigned GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "Helium ${{ steps.version.outputs.tag }} (Unsigned + E-AC3)"
+          files: dist/*
+          draft: false
+          prerelease: false
